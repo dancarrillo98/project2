@@ -4,10 +4,10 @@ Group
 Project
 - P2
 
-Data description
+Data description (temp)
 - Income, Age, Marriage, Mortgage, Home Equity Loan & Demographics
 
-Data source
+Data source (temp)
 - https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv 
 
 Queries
