@@ -1,14 +1,14 @@
 Group
-# Alchemy
+- Alchemy
 
 Project
-# P2
+- P2
 
 Data description
-# Income, Age, Marriage, Mortgage, Home Equity Loan & Demographics
+- Income, Age, Marriage, Mortgage, Home Equity Loan & Demographics
 
 Data source
-https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv 
+- https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv 
 
 Queries
 - Query 1
