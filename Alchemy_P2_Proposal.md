@@ -1,16 +1,15 @@
-Group
+# Project 2 Proposal
+
+## Group
 - Alchemy
 
-Project
-- P2
-
-Data description (temp)
+## Data Description (temp)
 - Income, Age, Marriage, Mortgage, Home Equity Loan & Demographics
 
-Data source (temp)
+## Data Source (temp)
 - https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv 
 
-Analysis Questions
+## Analysis Questions
 - How does the ratio between male and female correlate to divorce rates?
 - How does wealth correlate with divorce rates?
 - What are the ten wealthiest area codes in the US?
@@ -22,7 +21,7 @@ Analysis Questions
 - Are debt and home ownership correlated?
 - Does a larger population mean more higher rent?
 
-Technologies:
+## Technology Stack:
 - Apache Spark
 - Spark SQL
 - YARN
