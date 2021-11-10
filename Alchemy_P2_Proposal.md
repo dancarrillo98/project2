@@ -10,15 +10,16 @@
 - https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv 
 
 ## Analysis Questions
-- Is there a correlation between the percentage of male and female populations and the divorce rate in the US?
+- How does the ratio between male and female correlate to divorce rates?
 - How does wealth correlate with divorce rates?
-- What are the 10 weathiest cities in the US?
+- What are the ten wealthiest area codes in the US?
 - Is rent directly proportional to income in any particular area code or state?
-- How does income relate to debt in any given state?
-- Does the percentage of people having high school degrees correlate with less debt/rent/wealth?
-- Is debt and home ownership directly proportional?
-- Do states with a higher population have higher rent?
-- What percentage of people with a high school degree go into debt?
+- Do high school degrees correlate with less debt?
+- Do college degrees correlate with less debt?
+- Do more high school degrees correlate with higher rent?
+- Is rent correlated with water prices in any given area?
+- Are debt and home ownership correlated?
+- Does a larger population mean more higher rent?
 
 ## Technology Stack:
 - Apache Spark
