@@ -6,6 +6,8 @@ package clients
  */
 trait Client[T] {
 
+    def Connect() : Unit
+
     def Create(t: T): Unit
 
     def Read(): T
