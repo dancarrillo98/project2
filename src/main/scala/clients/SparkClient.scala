@@ -1,30 +1,45 @@
 package clients
 
-import models.Person
+import models.Record
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
-/** This object handles connecting to Spark
+/** Handles connection to Spark and CRUD operations
  *
  */
-object SparkClient extends Client[Person] {
+object SparkClient extends Client[Record] {
+
+    val session: SparkSession = SparkSession.builder().master("local").appName("Demographics").getOrCreate()
+    val context: SparkContext = session.sparkContext
 
     override def Connect(): Unit = {
 
+        val df: DataFrame = session.read
+            .option("header", true)
+            .option("inferSchema", true)
+            .option("delimiter", ",")
+            .csv("src/main/resources/archive/real_estate_db.csv")
+
     }
 
-    override def Create(t: Person): Unit = {
+    def Create(item: Record): Unit = {
 
     }
 
-    override def Read(): Person = {
+    override def Read(): Record = {
 
         return null
     }
 
-    override def Update(t: Person): Unit = {
+    override def Update(t: Record): Unit = {
 
     }
 
-    override def Delete(t: Person): Unit = {
+    override def Delete(t: Record): Unit = {
+
+    }
+
+    override def Close(): Unit = {
 
     }
 

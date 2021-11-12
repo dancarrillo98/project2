@@ -1,7 +1,6 @@
 package clients
 
-/** This class is an "interface" which defines the behavior for all client
- * classes this application may support
+/** Defines the behavior for all client classes this app may support
  *
  */
 trait Client[T] {
@@ -15,4 +14,6 @@ trait Client[T] {
     def Update(t: T): Unit
 
     def Delete(t: T): Unit
+
+    def Close(): Unit
 }
