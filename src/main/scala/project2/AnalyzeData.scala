@@ -14,7 +14,7 @@ object AnalyzeData {
         // Create SparkSession
         val spark: SparkSession = SparkSession
             .builder()
-            .master("local[3")
+            .master("local[3]")
             .appName("project2")
             .getOrCreate()
         
