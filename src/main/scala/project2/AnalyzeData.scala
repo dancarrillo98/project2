@@ -47,13 +47,30 @@ object AnalyzeData {
 
         // Analysis 5.2: Calculate correlation coefficient for 5.1
         df5Table.createOrReplaceTempView("Debt_HSDegree_Adjusted")
-        val df5Coef = spark.sql("SELECT ROUND(((AVG(Debt_Percentage*High_School_Degree_Percentage)-(AVG(Debt_Percentage)*AVG(High_School_Degree_Percentage))) / (STD(Debt_Percentage)*STD(High_School_Degree_Percentage))), 2) AS q5_coef_r FROM Debt_HSDegree_Adjusted")
+        val df5Coef = spark.sql("SELECT ROUND(((AVG(Debt_Percentage*High_School_Degree_Percentage)-(AVG(Debt_Percentage)*AVG(High_School_Degree_Percentage))) / (STD(Debt_Percentage)*STD(High_School_Degree_Percentage))), 2) AS q5_coefficient FROM Debt_HSDegree_Adjusted")
 
         df5Coef.write
             .option("header", "true")
             .csv(hdfsFilePath + "q5_Coef")
 
+        
+        // Analysis 6.1: Create table for "Does general population age correlate with less debt?"
+        val df6 = demographicsData.select("city", "state", "male_age_mean", "female_age_mean", "debt")
+        df6.createOrReplaceTempView("Age_Debt")
+        val df6Table = spark.sql("SELECT state AS State, ROUND(AVG(CAST(debt AS decimal)*100), 2) AS Debt_Percentage, ROUND(AVG((CAST(male_age_mean AS decimal) + CAST(female_age_mean as decimal))/2), 2) AS Average_Age FROM Age_Debt GROUP BY State ORDER BY Debt_Percentage DESC")
 
+        df6Table.coalesce(1)
+            .write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q6_Table")
+
+        // Analysis 6.2: Calculate correlation coefficient for 6.1
+        df6Table.createOrReplaceTempView("Age_Debt_Adjusted")
+        val df6Coef = spark.sql("SELECT ROUND(((AVG(Debt_Percentage*Average_Age)-(AVG(Debt_Percentage)*AVG(Average_Age))) / (STD(Debt_Percentage)*STD(Average_Age))), 2) AS q6_coefficient FROM Age_Debt_Adjusted")
+
+        df6Coef.write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q6_Coef")
 
         // Analysis 10.1: Create table for "Does a larger population mean higher rent?"
         val df10 = demographicsData.select("city", "state", "pop", "rent_mean")
@@ -67,7 +84,7 @@ object AnalyzeData {
 
         // Analysis 10.2: Calculate correlation coefficient r for 10.1
         df10Table.createOrReplaceTempView("Rent_Pop_Adjusted")
-        val df10Coef = spark.sql("SELECT ROUND(((AVG(Population*AverageRent)-(AVG(Population)*AVG(AverageRent))) / (STD(Population)*STD(AverageRent))), 2) AS q10_coef_r FROM Rent_Pop_Adjusted")
+        val df10Coef = spark.sql("SELECT ROUND(((AVG(Population*AverageRent)-(AVG(Population)*AVG(AverageRent))) / (STD(Population)*STD(AverageRent))), 2) AS q10_coefficient FROM Rent_Pop_Adjusted")
 
         df10Coef.write
             .option("header", "true")
