@@ -32,28 +32,29 @@ object AnalyzeData {
         // Show schema and first 20 rows to verify
         println("Printing Schema...")
         demographicsData.printSchema()
-        // demographicsData.show()
        
-        // Create Temp View for SQL queries
 
         // Analyze data
-            // Analysis 1: Do high school degrees correlate with less debt
-             //
-
-            // Analysis 2: Do college degrees correlate with less debt
 
 
-            // Analysis 3: Does a larger population mean higher rent
-            val df10 = demographicsData.select(col("city"), col("state"), col("pop"), col("rent_mean"))
-            df10.createOrReplaceTempView("Rent_Pop_table")
-            val df10Result = spark.sql("SELECT city AS City, state AS State, SUM(CAST(pop AS int)) AS Population, ROUND(AVG(CAST(rent_mean AS int)), 2) AS AverageRent FROM Rent_Pop_table GROUP BY city, state ORDER BY Population DESC")
+        // Analysis 10.1: Create table for "Does a larger population mean higher rent?""
+        val df10 = demographicsData.select("city", "state", "pop", "rent_mean")
+        df10.createOrReplaceTempView("Rent_Pop")
+        val df10Table = spark.sql("SELECT city AS City, state AS State, SUM(CAST(pop AS int)) AS Population, ROUND(AVG(CAST(rent_mean AS int)), 2) AS AverageRent FROM Rent_Pop GROUP BY city, state ORDER BY Population DESC")
 
-            df10Result.coalesce(1)
-                .write
-                .option("header", "true")
-                .csv(hdfsFilePath + "q10_Result")
+        df10Table.coalesce(1)
+            .write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q10_Table")
 
-        // Store results of analysis to a file on HDFS (S3 later)
+        // Analysis 10.2: Calculate correlation coefficient r for 10.1
+        df10Table.createOrReplaceTempView("Rent_Pop_Adjusted")
+        val df10Coef = spark.sql("SELECT ROUND(((AVG(Population*AverageRent)-(AVG(Population)*AVG(AverageRent))) / (STD(Population)*STD(AverageRent))), 2) AS q10_coef_r FROM Rent_Pop_Adjusted")
+
+            df10Coef.coalesce(1)
+            .write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q10_Coef")
 
 
     } // end main
