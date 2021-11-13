@@ -9,18 +9,26 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
  */
 object SparkClient extends Client[Record] {
 
-    val session: SparkSession = SparkSession.builder().master("local").appName("Demographics").getOrCreate()
+    val session: SparkSession = SparkSession.builder()
+      .master("local")
+      .appName("Demographics")
+      .getOrCreate()
+
     val context: SparkContext = session.sparkContext
+
+    var df: DataFrame = null
 
     override def Connect(): Unit = {
 
-        val df: DataFrame = session.read
-            .option("header", true)
-            .option("inferSchema", true)
-            .option("delimiter", ",")
-            .csv("src/main/resources/archive/real_estate_db.csv")
+        df = session.read
+          .option("header", true)
+          .option("inferSchema", true)
+          .option("delimiter", ",")
+          .csv("/home/hdoop/Projects/project2/src/main/resources/real_estate_db.csv")
 
     }
+
+    def Data(): DataFrame = df
 
     def Create(item: Record): Unit = {
 
