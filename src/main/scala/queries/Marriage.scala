@@ -1,5 +1,0 @@
-package queries
-
-class Marriage {
-
-}
