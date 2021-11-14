@@ -9,7 +9,7 @@ object Divorce {
 
         SparkClient.Connect()
 
-        Query_1()
+        Query_2()
 
     }
 
@@ -29,5 +29,10 @@ object Divorce {
         // How does wealth correlate with divorce?
         // FIXME: what do with wealth
         // TODO: get divorce rates
+        
+        val df: DataFrame = SparkClient.Data()
+          .select("family_mean", "family_median", "divorced")
+
+        df.show()
     }
 }
