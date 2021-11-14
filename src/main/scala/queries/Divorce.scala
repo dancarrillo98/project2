@@ -1,6 +1,7 @@
 package queries
 
 import clients.SparkClient
+import org.apache.spark.sql.DataFrame
 
 object Divorce {
 
@@ -17,7 +18,7 @@ object Divorce {
         // How does the ratio between male and female correlate to divorce rates?
         
         //val columns: Array[String] = Array("male_pop", "female_pop", "divorced")
-        val df = SparkClient.Data()
+        val df: DataFrame = SparkClient.Data()
           .select("male_pop", "female_pop", "divorced")
 
         df.show()
