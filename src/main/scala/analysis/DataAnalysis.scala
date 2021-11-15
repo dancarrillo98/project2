@@ -54,16 +54,12 @@ object DataApp{
         df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q4ByCity")
     }
 
-    def getQuery7(spark: SparkSession, demographicsData: DataFrame, hdfsFilePath: String): Unit = {
-        // Create table for "Do more high school degrees correlate with higher rent?"
-        val df7 = demographicsData.select("city", "state", "pop", "rent_mean", "hs_degree")
-        df7.createOrReplaceTempView("Rent_hs")
-        val df7Table = spark.sql("SELECT city AS City, state AS State, SUM(CAST(pop AS int)) AS Population, ROUND(AVG(CAST(rent_mean AS int)), 2) AS AverageRent, CAST(hs_degree as float) AS degree FROM Rent_hs GROUP BY city, state ORDER BY degree DESC")
+    def getQuery7(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+       //Query the results by state
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
 
-        df7Table.coalesce(1)
-            .write
-            .option("header", "true")
-            .csv(hdfsFilePath + "q7_Table")
+        //Query the results by city
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("city").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByCity")
     }
 
     //Query the results for Question 8
@@ -77,16 +73,12 @@ object DataApp{
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
     }
 
-    def getQuery9(spark: SparkSession, demographicsData: DataFrame, hdfsFilePath: String): Unit = {
-        // Create table for "Are debt and home ownership correlated?"
-        val df9 = demographicsData.select("city", "state", "debt", "home_equity")
-        df9.createOrReplaceTempView("debt_home")
-        val df9Table = spark.sql("SELECT city AS City, state AS State, CAST(debt AS float) AS Debt, CAST(home_equity AS float) AS HomeEquity FROM debt_home GROUP BY city, state ORDER BY Debt DESC")
+    def getQuery9(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+        //Query the results by state
+        df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("state").agg(avg("debt"),avg("home_equity")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByState")
 
-        df9Table.coalesce(1)
-            .write
-            .option("header", "true")
-            .csv(hdfsFilePath + "q9_Table")
+        //Query the results by city
+        df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("city").agg(avg("debt"),avg("home_equity")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByCity")
     }
 
     def printOptions(): Unit = {
