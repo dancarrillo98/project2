@@ -56,10 +56,10 @@ object DataApp{
 
     def getQuery7(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
        //Query the results by state
-        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state", "city").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByStateANDCity")
 
         //Query the results by city
-        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("city").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByCity")
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
     }
 
     //Query the results for Question 8
