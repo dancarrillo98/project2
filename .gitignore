@@ -3,5 +3,6 @@
 .bloop/
 .bsp/
 .idea/
+.vscode/
 target/
 project/target/
