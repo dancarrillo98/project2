@@ -1,13 +1,12 @@
 package clients
 
-import models.Record
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 /** Handles connection to Spark and CRUD operations
  *
  */
-object SparkClient extends Client[Record] {
+object SparkClient extends Client[Row] {
 
     val session: SparkSession = SparkSession.builder()
       .master("local")
@@ -30,20 +29,20 @@ object SparkClient extends Client[Record] {
 
     def Data(): DataFrame = df
 
-    def Create(item: Record): Unit = {
+    def Create(item: Row): Unit = {
 
     }
 
-    override def Read(): Record = {
+    override def Read(): Row = {
 
         return null
     }
 
-    override def Update(t: Record): Unit = {
+    override def Update(t: Row): Unit = {
 
     }
 
-    override def Delete(t: Record): Unit = {
+    override def Delete(t: Row): Unit = {
 
     }
 
