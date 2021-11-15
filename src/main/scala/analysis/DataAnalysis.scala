@@ -9,7 +9,7 @@ object DataApp{
     def main(args: Array[String]): Unit = {
         //Replace the localPath variable with your preferred destination
         //Hortonworks SandBox
-        val localPath = "file:///home/maria_dev/project2data/"
+        val localPath = "/user/maria_dev/project2/"
         //Begench S3
         //val localPath = "s3://alchemy-project-2/data/"
         //My Test S3
