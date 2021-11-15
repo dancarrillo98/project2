@@ -1,6 +1,5 @@
 package analysis
 
-
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions._
@@ -57,6 +56,7 @@ object DataApp{
         df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q4ByCity")
     }
 
+ 
     //Query the results for Question 5: "Do high school degrees correlate with less debt?"
     def getQuery5(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
 
@@ -106,7 +106,6 @@ object DataApp{
 
     }
 
-
     //Query the results for Question 8
     def getQuery8(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
@@ -117,8 +116,6 @@ object DataApp{
         //df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).show(10000, false)
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
     }
-
-
 
     //Query the results for Question 10: "Does a larger population mean higher rent?"
     def getQuery10(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
@@ -143,7 +140,6 @@ object DataApp{
             .csv(localPath + "Q10ByCity_Coefficient")
 
     }
-
 
     def printOptions(): Unit = {
         println("Welcome to your big data analyzer application.")
@@ -200,4 +196,3 @@ object DataApp{
         userAction
     }
 }
-

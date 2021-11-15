@@ -14,6 +14,12 @@ project/metals.sbt
 
 # sbt
 project/project/
+*.class
+*.log
+.bloop/
+.metals/
+.bsp/
+.idea/
 project/target/
 target/
 
