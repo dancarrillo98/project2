@@ -14,25 +14,33 @@ object DataApp{
         //val localPath = "s3://alchemy-project-2/data/"
         //My Test S3
         //val localPath = "s3://project2datanalyzer/data/"
-
-        val spark: SparkSession = SparkSession
+        
+        try{
+            val spark: SparkSession = SparkSession
             .builder()
             .master("local[1]")
             .appName("DataAnalyzer")
             .getOrCreate()
-        val sc = spark.sparkContext
+            val sc = spark.sparkContext
 
-        spark.sparkContext.setLogLevel("ERROR")
-        import spark.implicits._
+            spark.sparkContext.setLogLevel("ERROR")
+            import spark.implicits._
 
-        val df = spark.read
-            .option("header", true)
-            .option("inferSchema", true)
-            .csv(localPath + "real_estate_db.csv")
+            val df = spark.read
+                .option("header", true)
+                .option("inferSchema", true)
+                .csv(localPath + "real_estate_db.csv")
 
-
-        getQuery4(df, localPath)
-        getQuery8(df, localPath)
+            while (true){
+                printOptions()
+                val userAction = performQuery(df, localPath)
+                if (userAction == "11"){
+                    return
+                }
+            }
+            } finally {
+                println("Exiting program.")
+            }
     }
 
     //Query the results for Question 4
@@ -57,5 +65,49 @@ object DataApp{
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
     }
 
+    def printOptions(): Unit = {
+        println("Welcome to your big data analyzer application.")
+        println("[1] Q1")
+        println("[2] Q2")
+        println("[3] Q3")
+        println("[4] Q4")
+        println("[5] Q5")
+        println("[6] Q6")
+        println("[7] Q7")
+        println("[8] Q8")
+        println("[9] Q9")
+        println("[10] Q10")
+        println("[11] Exit")
+    }
 
+    def getUserAction(): String = {
+        val userAction = readLine("Choose an action: ")
+        println("\n")
+        userAction
+    }
+
+    def performQuery(df: DataFrame, localPath: String): String = {
+        val userAction = getUserAction()
+        userAction match {
+            case "1" => // Q1
+            case "2" => // Q2
+            case "3" => // Q3
+            case "4" => {
+                println("Performing query for Question 4 ...")
+                getQuery4(df, localPath)
+            }
+            case "5" => // Q5
+            case "6" => // Q6
+            case "7" => // Q7
+            case "8" => {
+                 println("Performing query for Question 8 ...")
+                getQuery8(df, localPath)
+            }
+            case "9" => // Q9
+            case "10" => // Q10
+            case "11" => println("Have a nice day!")
+            case _ => println("Not a valid option, please try again.")
+        }
+        userAction
+    }
 }
