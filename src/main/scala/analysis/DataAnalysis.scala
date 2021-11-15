@@ -33,7 +33,7 @@ object DataApp{
 
             while (true){
                 printOptions()
-                val userAction = performQuery(df, localPath)
+                val userAction = performQuery(spark, df, localPath)
                 if (userAction == "11"){
                     return
                 }
@@ -54,6 +54,18 @@ object DataApp{
         df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q4ByCity")
     }
 
+    def getQuery7(spark: SparkSession, demographicsData: DataFrame, hdfsFilePath: String): Unit = {
+        // Create table for "Do more high school degrees correlate with higher rent?"
+        val df7 = demographicsData.select("city", "state", "pop", "rent_mean", "hs_degree")
+        df7.createOrReplaceTempView("Rent_hs")
+        val df7Table = spark.sql("SELECT city AS City, state AS State, SUM(CAST(pop AS int)) AS Population, ROUND(AVG(CAST(rent_mean AS int)), 2) AS AverageRent, CAST(hs_degree as float) AS degree FROM Rent_hs GROUP BY city, state ORDER BY degree DESC")
+
+        df7Table.coalesce(1)
+            .write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q7_Table")
+    }
+
     //Query the results for Question 8
     def getQuery8(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
@@ -63,6 +75,18 @@ object DataApp{
         //Query the results by city
         //df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).show(10000, false)
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
+    }
+
+    def getQuery9(spark: SparkSession, demographicsData: DataFrame, hdfsFilePath: String): Unit = {
+        // Create table for "Are debt and home ownership correlated?"
+        val df9 = demographicsData.select("city", "state", "debt", "home_equity")
+        df9.createOrReplaceTempView("debt_home")
+        val df9Table = spark.sql("SELECT city AS City, state AS State, CAST(debt AS float) AS Debt, CAST(home_equity AS float) AS HomeEquity FROM debt_home GROUP BY city, state ORDER BY Debt DESC")
+
+        df9Table.coalesce(1)
+            .write
+            .option("header", "true")
+            .csv(hdfsFilePath + "q9_Table")
     }
 
     def printOptions(): Unit = {
@@ -86,7 +110,7 @@ object DataApp{
         userAction
     }
 
-    def performQuery(df: DataFrame, localPath: String): String = {
+    def performQuery(spark: SparkSession, df: DataFrame, localPath: String): String = {
         val userAction = getUserAction()
         userAction match {
             case "1" => // Q1
@@ -98,12 +122,18 @@ object DataApp{
             }
             case "5" => // Q5
             case "6" => // Q6
-            case "7" => // Q7
+            case "7" => {
+                println("Performing query for Question 7 ...")
+                getQuery7(spark, df, localPath)
+            }
             case "8" => {
                  println("Performing query for Question 8 ...")
                 getQuery8(df, localPath)
             }
-            case "9" => // Q9
+            case "9" => {
+                println("Performing query for Question 9 ...")
+                getQuery9(spark, df, localPath)
+            }
             case "10" => // Q10
             case "11" => println("Have a nice day!")
             case _ => println("Not a valid option, please try again.")
