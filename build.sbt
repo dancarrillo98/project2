@@ -8,15 +8,9 @@ ThisBuild / organizationName := "example"
 lazy val root = (project in file("."))
   .settings(
     name := "2-demographics",
-<<<<<<< HEAD
     libraryDependencies += scalaTest % Test,
     libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.3",
     libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.3"
-=======
-    libraryDependencies += scalaTest % Test
-    ,libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.3"
-    ,libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.3"
->>>>>>> b3e75f675f30e10f2815460ed421fa2995b29087
   )
 
 // Uncomment the following for publishing to Sonatype.
