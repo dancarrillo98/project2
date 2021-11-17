@@ -39,10 +39,11 @@ object Divorce {
         // checking for male and female population
         // as NaN omits all the items for some reason
         val data: DataFrame = df
-          .filter(
-            df("divorced") =!= "NaN"
+          .select(
+            "state_ab", "city", "zip_code", "male_pop", "female_pop", "divorced"
           )
-          .select("state_ab", "city", "zip_code", "male_pop", "female_pop", "divorced")
+
+          .filter(df("divorced") =!= "NaN")
 
 
         // FIXME: city names are likely not unique b/w states
@@ -70,22 +71,19 @@ object Divorce {
         // Checking for multiple conditions with
         // && throws an error for some reason
         val data: DataFrame = df
-          .filter(
-            "family_median  != 'NaN' " +
-            "divorced != 'NaN'"
-          )
-          .select("state_ab", "city", "place", "family_median", "divorced")
+          .select("state_ab", "city", "zip_code", "family_median", "divorced")
+          .filter("family_median != 'NaN' AND divorced != 'NaN'")
 
         // FIXME: city names are likely not unique b/w states
-        val data_state: DataFrame = df
+        val data_state: DataFrame = data
           .groupBy("state_ab")
           .agg(avg("family_median"), avg("divorced"))
 
-        val data_city: DataFrame = df
+        val data_city: DataFrame = data
           .groupBy("city")
           .agg(avg("family_median"), avg("divorced"))
 
-        val data_place: DataFrame = df
+        val data_place: DataFrame = data
           .groupBy("zip_code")
           .agg(avg("family_median"), avg("divorced"))
 
