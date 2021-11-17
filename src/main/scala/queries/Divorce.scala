@@ -21,8 +21,8 @@ object Divorce {
         val local_path: String = "/home/hdoop/Projects/project2/"
 
         val df: DataFrame = spark.read
-          .option("header", true)
-          .option("inferSchema", true)
+          .option("header", value = true)
+          .option("inferSchema", value = true)
           .option("delimiter", ",")
           .csv(local_path + "src/main/resources/real_estate_db.csv")
 
@@ -40,7 +40,7 @@ object Divorce {
         // as NaN omits all the items for some reason
         val data: DataFrame = df
           .filter(
-            df("divorced") !== "NaN"
+            df("divorced") =!= "NaN"
           )
           .select("state_ab", "city", "zip_code", "male_pop", "female_pop", "divorced")
 
