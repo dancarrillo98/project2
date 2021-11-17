@@ -1,31 +1,22 @@
-# bloop and metals
-.bloop
-.bsp
+# bloop
+.bloop/
+.bsp/
 
 # metals
 project/metals.sbt
-.metals
+.metals/
 
 # vs code
-.vscode
+.vscode/
 
 # scala 3
 .tasty
 
 # sbt
 project/project/
+project/target
 *.class
 *.log
-.bloop/
-.metals/
-.bsp/
-.idea/
-<<<<<<< HEAD
-=======
-.vscode/
-target/
->>>>>>> ben_dev
-project/target/
 target/
 
 # eclipse
@@ -37,12 +28,11 @@ build/
 bin/
 .cache
 
-# intellij idea
-*.log
+# IntelliJ idea
 *.iml
 *.ipr
 *.iws
-.idea
+.idea/
 
 # mac
 .DS_Store
@@ -51,9 +41,6 @@ bin/
 .history
 .scala_dependencies
 .cache-main
-
-#general
-*.class
 
 #misc
 .project2/
