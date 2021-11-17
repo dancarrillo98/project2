@@ -1,10 +1,10 @@
-package queries
+package analysis
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SparkSession, DataFrame}
 import org.apache.spark.sql.functions.avg
 
-object Divorce {
+object DataAnalysis {
 
     val spark: SparkSession = SparkSession.builder()
       .master("local[1]")
