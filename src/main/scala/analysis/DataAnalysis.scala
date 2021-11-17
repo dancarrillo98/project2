@@ -9,9 +9,9 @@ object DataApp{
     def main(args: Array[String]): Unit = {
         //Replace the localPath variable with your preferred destination
         //Hortonworks SandBox
-        val localPath = "file:///home/maria_dev/project2data/"
+        //val localPath = "file:///home/maria_dev/project2data/"
         // HDFS path
-        //val localPath = "/user/maria_dev/project2/"
+        val localPath = "/user/maria_dev/project2/"
         //Begench S3
         //val localPath = "s3://alchemy-project-2/data/"
         //My Test S3
@@ -53,7 +53,7 @@ object DataApp{
 
         //Query the results by city
         //df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("city")).show(10000, false)
-        df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q4ByCity")
+        df.filter("rent_mean != 'NaN' AND family_mean != 'NaN'").groupBy("state", "city").agg(avg("rent_mean"),avg("family_mean")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q4ByCity")
     }
 
  
@@ -106,6 +106,14 @@ object DataApp{
 
     }
 
+     def getQuery7(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+       //Query the results by state
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
+
+        //Query the results by city
+        df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state", "city").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByCity")
+    }
+
     //Query the results for Question 8
     def getQuery8(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
@@ -114,7 +122,15 @@ object DataApp{
 
         //Query the results by city
         //df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).show(10000, false)
-        df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("city").agg(avg("rent_mean"),avg("married")).sort(asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
+        df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("state", "city").agg(avg("rent_mean"),avg("married")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
+    }
+
+     def getQuery9(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+        //Query the results by state
+        df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("state").agg(avg("debt"),avg("home_equity")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByState")
+
+        //Query the results by city
+        df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("state", "city").agg(avg("debt"),avg("home_equity")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByCity")
     }
 
     //Query the results for Question 10: "Does a larger population mean higher rent?"
@@ -173,21 +189,27 @@ object DataApp{
                 getQuery4(df, localPath)
             }
             case "5" => {
-                println("Performing query for Question 4 ...")
+                println("Performing query for Question 5 ...")
                 getQuery5(spark, df, localPath)
             }
             case "6" => {
-                println("Performing query for Question 4 ...")
+                println("Performing query for Question 6 ...")
                 getQuery6(spark, df, localPath)
             }
-            case "7" => // Q7
+            case "7" => {
+                println("Performing query for Question 7 ...")
+                getQuery7(spark, df, localPath)
+            }
             case "8" => {
-                 println("Performing query for Question 8 ...")
+                println("Performing query for Question 8 ...")
                 getQuery8(df, localPath)
             }
-            case "9" => // Q9
+            case "9" => {
+                println("Performing query for Question 9 ...")
+                getQuery9(spark, df, localPath)
+            }
             case "10" => {
-                println("Performing query for Question 4 ...")
+                println("Performing query for Question 10 ...")
                 getQuery10(spark, df, localPath)
             }
             case "11" => println("Have a nice day!")
