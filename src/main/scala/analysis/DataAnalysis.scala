@@ -1,12 +1,14 @@
 package analysis
 
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.DataFrame
 
-object DataApp{
+object DataAnalysis {
     def main(args: Array[String]): Unit = {
+
         //Replace the localPath variable with your preferred destination
         //Hortonworks SandBox
         //val localPath = "file:///home/maria_dev/project2data/"
@@ -16,19 +18,23 @@ object DataApp{
         //val localPath = "s3://alchemy-project-2/data/"
         //My Test S3
         //val localPath = "s3://project2datanalyzer/data/"
+        //ben local
+          //val local_path = /home/hdoop/Projects/project2
+          //csv was src/main/resources/real_estate_db.csv
         
         try{
             val spark: SparkSession = SparkSession
-            .builder()
-            .master("local[1]")
-            .appName("DataAnalyzer")
-            .getOrCreate()
-            val sc = spark.sparkContext
+              .builder()
+              .master("local[1]")
+              .appName("DataAnalyzer")
+              .getOrCreate()
+
+            val sc: SparkContext = spark.sparkContext
 
             spark.sparkContext.setLogLevel("ERROR")
             import spark.implicits._
 
-            val df = spark.read
+            val df: DataFrame = spark.read
                 .option("header", true)
                 .option("inferSchema", true)
                 .csv(localPath + "real_estate_db.csv")
@@ -43,6 +49,69 @@ object DataApp{
             } finally {
                 println("Exiting program.")
             }
+    }
+
+    def Query_1(df: DataFrame): Unit = {
+
+        // How does the ratio between male and
+        // female correlate to divorce rates?
+
+        // Population is not NaN, only 0
+        // checking for male and female population
+        // as NaN omits all the items for some reason
+        val data: DataFrame = df
+            .select(
+                "state_ab", "city", "zip_code", "male_pop", "female_pop", "divorced"
+            )
+
+            .filter(df("divorced") =!= "NaN")
+
+
+        // FIXME: city names are likely not unique b/w states
+        val data_state: DataFrame = data
+            .groupBy("state_ab")
+            .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
+
+        val data_city: DataFrame = data
+            .groupBy("city")
+            .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
+
+        val data_place: DataFrame = data
+            .groupBy("zip_code")
+            .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
+
+        data_state.show()
+        data_city.show()
+        data_place.show()
+
+    }
+
+    def Query_2(df: DataFrame): Unit = {
+        // How does income correlate with divorce?
+
+        // Checking for multiple conditions with
+        // && throws an error for some reason
+        val data: DataFrame = df
+            .select("state_ab", "city", "zip_code", "family_median", "divorced")
+            .filter("family_median != 'NaN' AND divorced != 'NaN'")
+
+        // FIXME: city names are likely not unique b/w states
+        val data_state: DataFrame = data
+            .groupBy("state_ab")
+            .agg(avg("family_median"), avg("divorced"))
+
+        val data_city: DataFrame = data
+            .groupBy("city")
+            .agg(avg("family_median"), avg("divorced"))
+
+        val data_place: DataFrame = data
+            .groupBy("zip_code")
+            .agg(avg("family_median"), avg("divorced"))
+
+
+        data_state.show()
+        data_city.show()
+        data_place.show()
     }
 
     //Query the results for Question 4
@@ -158,9 +227,10 @@ object DataApp{
     }
 
     def printOptions(): Unit = {
+        // TODO: maybe clean this up
         println("Welcome to your big data analyzer application.")
-        println("[1] Q1")
-        println("[2] Q2")
+        println("[1] Q1: How does the ratio between male and female correlate to divorce rates?")
+        println("[2] Q2: How does income correlate with divorce?")
         println("[3] Q3")
         println("[4] Q4")
         println("[5] Q5")
@@ -181,8 +251,8 @@ object DataApp{
     def performQuery(spark: SparkSession, df: DataFrame, localPath: String): String = {
         val userAction = getUserAction()
         userAction match {
-            case "1" => // Q1
-            case "2" => // Q2
+            case "1" => Query_1(df)
+            case "2" => Query_2(df)
             case "3" => // Q3
             case "4" => {
                 println("Performing query for Question 4 ...")

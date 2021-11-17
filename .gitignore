@@ -20,6 +20,11 @@ project/project/
 .metals/
 .bsp/
 .idea/
+<<<<<<< HEAD
+=======
+.vscode/
+target/
+>>>>>>> ben_dev
 project/target/
 target/
 
