@@ -11,9 +11,9 @@ object DataAnalysis {
 
         //Replace the localPath variable with your preferred destination
         //Hortonworks SandBox
-        //val localPath = "file:///home/maria_dev/project2data/"
+        val localPath = "file:///home/maria_dev/project2data/"
         // HDFS path
-        val localPath = "/user/maria_dev/project2/"
+        //val localPath = "/user/maria_dev/project2/"
         //Begench S3
         //val localPath = "s3://alchemy-project-2/data/"
         //My Test S3
@@ -51,7 +51,7 @@ object DataAnalysis {
             }
     }
 
-    def Query_1(df: DataFrame): Unit = {
+    def getQuery1(df: DataFrame, localPath: String): Unit = {
 
         // How does the ratio between male and
         // female correlate to divorce rates?
@@ -61,7 +61,7 @@ object DataAnalysis {
         // as NaN omits all the items for some reason
         val data: DataFrame = df
             .select(
-                "state_ab", "city", "zip_code", "male_pop", "female_pop", "divorced"
+                "state", "city", "zip_code", "male_pop", "female_pop", "divorced"
             )
 
             .filter(df("divorced") =!= "NaN")
@@ -69,39 +69,39 @@ object DataAnalysis {
 
         // FIXME: city names are likely not unique b/w states
         val data_state: DataFrame = data
-            .groupBy("state_ab")
+            .groupBy("state")
             .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
 
         val data_city: DataFrame = data
-            .groupBy("city")
+            .groupBy("state", "city")
             .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
 
         val data_place: DataFrame = data
             .groupBy("zip_code")
             .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
 
-        data_state.show()
-        data_city.show()
-        data_place.show()
+        data_state.coalesce(1).write.mode("overwrite").csv(localPath + "Q1ByState")
+        data_city.coalesce(1).write.mode("overwrite").csv(localPath + "Q1ByCity")
+        data_place.coalesce(1).write.mode("overwrite").csv(localPath + "Q1ByZip")
 
     }
 
-    def Query_2(df: DataFrame): Unit = {
+    def getQuery2(df: DataFrame, localPath: String): Unit = {
         // How does income correlate with divorce?
 
         // Checking for multiple conditions with
         // && throws an error for some reason
         val data: DataFrame = df
-            .select("state_ab", "city", "zip_code", "family_median", "divorced")
+            .select("state", "city", "zip_code", "family_median", "divorced")
             .filter("family_median != 'NaN' AND divorced != 'NaN'")
 
         // FIXME: city names are likely not unique b/w states
         val data_state: DataFrame = data
-            .groupBy("state_ab")
+            .groupBy("state")
             .agg(avg("family_median"), avg("divorced"))
 
         val data_city: DataFrame = data
-            .groupBy("city")
+            .groupBy("state", "city")
             .agg(avg("family_median"), avg("divorced"))
 
         val data_place: DataFrame = data
@@ -109,9 +109,9 @@ object DataAnalysis {
             .agg(avg("family_median"), avg("divorced"))
 
 
-        data_state.show()
-        data_city.show()
-        data_place.show()
+        data_state.coalesce(1).write.mode("overwrite").csv(localPath + "Q2ByState")
+        data_city.coalesce(1).write.mode("overwrite").csv(localPath + "Q2ByCity")
+        data_place.coalesce(1).write.mode("overwrite").csv(localPath + "Q2ByZip")
     }
 
     //Query the results for Question 4
@@ -145,9 +145,9 @@ object DataAnalysis {
         val dfCoef = spark.sql("SELECT ROUND(((AVG(Debt_Percentage*High_School_Degree_Percentage)-(AVG(Debt_Percentage)*AVG(High_School_Degree_Percentage))) / (STD(Debt_Percentage)*STD(High_School_Degree_Percentage))), 2) AS q5_coefficient FROM Debt_HSDegree_Adjusted")
         
         dfCoef.write
+            .mode("overwrite")
             .option("header", "true")
             .csv(localPath + "Q5ByState_Coefficient")
-
     }
 
 
@@ -170,12 +170,13 @@ object DataAnalysis {
         val dfCoef = spark.sql("SELECT ROUND(((AVG(Debt_Percentage*Average_Age)-(AVG(Debt_Percentage)*AVG(Average_Age))) / (STD(Debt_Percentage)*STD(Average_Age))), 2) AS q6_coefficient FROM Age_Debt_Adjusted")
         
         dfCoef.write
+            .mode("overwrite")
             .option("header", "true")
             .csv(localPath + "Q6ByState_Coefficient")
 
     }
 
-     def getQuery7(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+     def getQuery7(df: DataFrame, localPath: String): Unit = {
        //Query the results by state
         df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
 
@@ -194,7 +195,7 @@ object DataAnalysis {
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("state", "city").agg(avg("rent_mean"),avg("married")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
     }
 
-     def getQuery9(spark: SparkSession, df: DataFrame, localPath: String): Unit = {
+     def getQuery9(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
         df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("state").agg(avg("debt"),avg("home_equity")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByState")
 
@@ -221,6 +222,7 @@ object DataAnalysis {
         val dfCoef = spark.sql("SELECT ROUND(((AVG(Population*AverageRent)-(AVG(Population)*AVG(AverageRent))) / (STD(Population)*STD(AverageRent))), 2) AS q10_coefficient FROM Rent_Pop_Adjusted")
         
         dfCoef.write
+            .mode("overwrite")
             .option("header", "true")
             .csv(localPath + "Q10ByCity_Coefficient")
 
@@ -231,14 +233,14 @@ object DataAnalysis {
         println("Welcome to your big data analyzer application.")
         println("[1] Q1: How does the ratio between male and female correlate to divorce rates?")
         println("[2] Q2: How does income correlate with divorce?")
-        println("[3] Q3")
-        println("[4] Q4")
-        println("[5] Q5")
-        println("[6] Q6")
-        println("[7] Q7")
-        println("[8] Q8")
-        println("[9] Q9")
-        println("[10] Q10")
+        println("[3] Q3: What are the ten wealthiest area codes in the US?")
+        println("[4] Q4: Is rent directly proportional to income?")
+        println("[5] Q5: Do high school degrees correlate with less debt?")
+        println("[6] Q6: Does general population age correlate with less debt")
+        println("[7] Q7: Is the mean rent correlated with high school graduation?")
+        println("[8] Q8: Is rent correlated with marriage rates?")
+        println("[9] Q9: Are debt and home ownership correlated?")
+        println("[10] Q10: Does a larger population mean higher rent?")
         println("[11] Exit")
     }
 
@@ -251,9 +253,18 @@ object DataAnalysis {
     def performQuery(spark: SparkSession, df: DataFrame, localPath: String): String = {
         val userAction = getUserAction()
         userAction match {
-            case "1" => Query_1(df)
-            case "2" => Query_2(df)
-            case "3" => // Q3
+            case "1" => {
+                println("Performing query for Question 1 ...")
+                getQuery1(df, localPath)
+            }
+            case "2" => {
+                println("Performing query for Question 2 ...")
+                getQuery2(df, localPath)
+            }
+            case "3" => {
+                println("Performing query for Question 3 ...")
+                // Q3
+            }
             case "4" => {
                 println("Performing query for Question 4 ...")
                 getQuery4(df, localPath)
@@ -268,7 +279,7 @@ object DataAnalysis {
             }
             case "7" => {
                 println("Performing query for Question 7 ...")
-                getQuery7(spark, df, localPath)
+                getQuery7(df, localPath)
             }
             case "8" => {
                 println("Performing query for Question 8 ...")
@@ -276,7 +287,7 @@ object DataAnalysis {
             }
             case "9" => {
                 println("Performing query for Question 9 ...")
-                getQuery9(spark, df, localPath)
+                getQuery9(df, localPath)
             }
             case "10" => {
                 println("Performing query for Question 10 ...")
