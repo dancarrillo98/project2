@@ -114,6 +114,12 @@ object DataAnalysis {
         data_place.coalesce(1).write.mode("overwrite").csv(localPath + "Q2ByZip")
     }
 
+    // Query: What are the ten wealthiest area codes in the US?
+    def getQuery3(df: DataFrame, localPath: String):Unit = {
+        //df.filter("family_mean != 'NaN'").groupBy("area_code").agg(sum("family_mean").as("total_avg_wealth")).orderBy(col("total_avg_wealth").desc).show(false)
+        df.filter("family_mean != 'NaN'").groupBy("area_code").agg(sum("family_mean").as("total_avg_wealth")).orderBy(col("total_avg_wealth").desc).coalesce(1).write.mode("overwrite").csv(localPath + "Q3ByAreaCode")
+    }
+
     //Query the results for Question 4
     def getQuery4(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
@@ -263,7 +269,7 @@ object DataAnalysis {
             }
             case "3" => {
                 println("Performing query for Question 3 ...")
-                // Q3
+                getQuery3(df, localPath)
             }
             case "4" => {
                 println("Performing query for Question 4 ...")
