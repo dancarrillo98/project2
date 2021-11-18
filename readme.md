@@ -1,24 +1,35 @@
-### Project 2
-This is a template, to be filled out by each group and placed in their git repo titled README.md
+Project 2
+Group
 
-Requirements:
-- Create a Spark Application that processes data (huge data) (you can either get the dataset from a reliable source or get it from an API).
-- Your project 2 pitch should involve some analysis of the data.  This can be the central feature.  Your final application should work, to some extent and historical data.	
-- Produce a one or more .jar files for your analysis.  Multiple smaller jar files are preferred.
+    Alchemy
 
-### Presentations
-- Bring a simple slide deck providing an overview of your results.  You should present your results, a high level overview of the process used to achieve those results, and any assumptions and simplifications you made on the way to those results.
-- I may ask you to run an analysis on the day of the presentation, so be prepared to do so.
-- We'll have 20 minutes per group, so make sure your presentation can be covered in that time, focusing on the parts of your analysis you find most interesting.
-- Include a link to your github repository at the end of your slides.
+Data Description (temp)
 
-### Technologies
-- Apache Spark
-- Spark SQL
-- YARN
-- HDFS and/or S3
-- Scala
-- Git + GitHub
+    Income, Age, Marriage, Mortgage, Home Equity Loan & Demographics
 
-### Due Date
-- Presentations will take place on Friday, 19-Nov-2021.
+Data Source (temp)
+
+    https://www.kaggle.com/goldenoakresearch/us-acs-mortgage-equity-loans-rent-statistics?select=real_estate_db.csv
+
+Analysis Questions
+
+    How does the ratio between male and female correlate to divorce rates?
+    How does wealth correlate with divorce rates?
+    What are the ten wealthiest area codes in the US?
+    Is rent directly proportional to income in any particular area code or state?
+    Do high school degrees correlate with less debt?
+    Do college degrees correlate with less debt?
+    Do more high school degrees correlate with higher rent?
+    Is rent correlated with water prices in any given area?
+    Are debt and home ownership correlated?
+    Does a larger population mean more higher rent?
+
+Technology Stack:
+
+    Apache Spark
+    Spark SQL
+    YARN
+    HDFS and/or S3
+    Scala
+    Git + GitHub
+    Jira
