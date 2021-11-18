@@ -11,16 +11,11 @@ object DataAnalysis {
 
         //Replace the localPath variable with your preferred destination
         //Hortonworks SandBox
-        val localPath = "file:///home/maria_dev/project2data/"
+        //val localPath = "file:///home/maria_dev/project2data/"
         // HDFS path
-        //val localPath = "/user/maria_dev/project2/"
+        val localPath = "/user/maria_dev/project2/"
         //Begench S3
         //val localPath = "s3://alchemy-project-2/data/"
-        //My Test S3
-        //val localPath = "s3://project2datanalyzer/data/"
-        //ben local
-          //val local_path = /home/hdoop/Projects/project2
-          //csv was src/main/resources/real_estate_db.csv
         
         try{
             val spark: SparkSession = SparkSession
@@ -51,14 +46,12 @@ object DataAnalysis {
             }
     }
 
+    //Query the results for Question 1
     def getQuery1(df: DataFrame, localPath: String): Unit = {
 
         // How does the ratio between male and
         // female correlate to divorce rates?
 
-        // Population is not NaN, only 0
-        // checking for male and female population
-        // as NaN omits all the items for some reason
         val data: DataFrame = df
             .select(
                 "state", "city", "zip_code", "male_pop", "female_pop", "divorced"
@@ -67,7 +60,6 @@ object DataAnalysis {
             .filter(df("divorced") =!= "NaN")
 
 
-        // FIXME: city names are likely not unique b/w states
         val data_state: DataFrame = data
             .groupBy("state")
             .agg(avg("male_pop"), avg("female_pop"), avg("divorced"))
@@ -86,16 +78,14 @@ object DataAnalysis {
 
     }
 
+    //Query the results for Question 2
     def getQuery2(df: DataFrame, localPath: String): Unit = {
         // How does income correlate with divorce?
 
-        // Checking for multiple conditions with
-        // && throws an error for some reason
         val data: DataFrame = df
             .select("state", "city", "zip_code", "family_median", "divorced")
             .filter("family_median != 'NaN' AND divorced != 'NaN'")
 
-        // FIXME: city names are likely not unique b/w states
         val data_state: DataFrame = data
             .groupBy("state")
             .agg(avg("family_median"), avg("divorced"))
@@ -114,7 +104,7 @@ object DataAnalysis {
         data_place.coalesce(1).write.mode("overwrite").csv(localPath + "Q2ByZip")
     }
 
-    // Query: What are the ten wealthiest area codes in the US?
+    // Query 3: What are the ten wealthiest area codes in the US?
     def getQuery3(df: DataFrame, localPath: String):Unit = {
         //df.filter("family_mean != 'NaN'").groupBy("area_code").agg(sum("family_mean").as("total_avg_wealth")).orderBy(col("total_avg_wealth").desc).show(false)
         df.filter("family_mean != 'NaN'").groupBy("area_code").agg(sum("family_mean").as("total_avg_wealth")).orderBy(col("total_avg_wealth").desc).coalesce(1).write.mode("overwrite").csv(localPath + "Q3ByAreaCode")
@@ -182,6 +172,7 @@ object DataAnalysis {
 
     }
 
+    //Query the results for Question 7
      def getQuery7(df: DataFrame, localPath: String): Unit = {
        //Query the results by state
         df.filter("hs_degree != 'NaN' AND rent_mean != 'NaN'").groupBy("state").agg(avg("hs_degree"),avg("rent_mean")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q7ByState")
@@ -201,6 +192,7 @@ object DataAnalysis {
         df.filter("rent_mean != 'NaN' AND married != 'NaN'").groupBy("state", "city").agg(avg("rent_mean"),avg("married")).sort(asc("state"), asc("city")).coalesce(1).write.mode("overwrite").csv(localPath + "Q8ByCity")
     }
 
+    //Query the results for Question 9
      def getQuery9(df: DataFrame, localPath: String): Unit = {
         //Query the results by state
         df.filter("debt != 'NaN' AND home_equity != 'NaN'").groupBy("state").agg(avg("debt"),avg("home_equity")).sort(asc("state")).coalesce(1).write.mode("overwrite").csv(localPath + "Q9ByState")
@@ -234,8 +226,8 @@ object DataAnalysis {
 
     }
 
+    //Present options to user
     def printOptions(): Unit = {
-        // TODO: maybe clean this up
         println("Welcome to your big data analyzer application.")
         println("[1] Q1: How does the ratio between male and female correlate to divorce rates?")
         println("[2] Q2: How does income correlate with divorce?")
@@ -250,12 +242,14 @@ object DataAnalysis {
         println("[11] Exit")
     }
 
+    //Read option string from user
     def getUserAction(): String = {
         val userAction = readLine("Choose an action: ")
         println("\n")
         userAction
     }
 
+    //Perform action based on option chosen by user
     def performQuery(spark: SparkSession, df: DataFrame, localPath: String): String = {
         val userAction = getUserAction()
         userAction match {
